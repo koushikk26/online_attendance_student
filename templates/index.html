@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Online Attendance Management System
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <script
+        src="{{ url_for('static', filename='script.js') }}"
+        defer>
+    </script>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+{% if page == "login" %}
+
+<header class="main-header">
+
+    <h1>
+        Online Attendance Management System
+    </h1>
+
+    <p>
+        Faculty records attendance |
+        Students view attendance
+    </p>
+
+</header>
+
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <h2>Login</h2>
+
+        <form method="POST" id="loginForm">
+
+            <label>
+                Username
+            </label>
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                required
+            >
+
+
+            <label>
+                Password
+            </label>
+
+            <div class="password-box">
+
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    id="togglePassword">
+                    Show
+                </button>
+
+            </div>
+
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <div class="demo-box">
+
+            <h3>Demo Login Details</h3>
+
+            <p>
+                <strong>Faculty</strong><br>
+                faculty1 / 1234
+            </p>
+
+            <p>
+                <strong>Students</strong><br>
+                Karthik → student1 / 1234<br>
+                Ravi → student2 / 1234<br>
+                Keerthan → student3 / 1234<br>
+                Sunil → student4 / 1234<br>
+                Koushik → student5 / 1234
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     FACULTY
+===================================================== -->
+
+{% elif page == "faculty" %}
+
+<header class="dashboard-header">
+
+    <div>
+
+        <h1>
+            Faculty Dashboard
+        </h1>
+
+        <p>
+            Online Attendance Management System
+        </p>
+
+    </div>
+
+    <a href="/logout"
+       class="logout-button">
+        Logout
+    </a>
+
+</header>
+
+
+<div class="dashboard-container">
+
+
+    <!-- Attendance Form -->
+
+    <div class="card">
+
+        <h2>
+            Mark Attendance
+        </h2>
+
+        <p class="description">
+            Select student and record attendance class-by-class.
+        </p>
+
+
+        <form
+            method="POST"
+            id="attendanceForm">
+
+
+            <label>
+                Student Name
+            </label>
+
+            <select
+                name="student"
+                id="student"
+                required>
+
+                <option value="">
+                    Select Student
+                </option>
+
+                {% for student in students %}
+
+                <option value="{{ student }}">
+                    {{ student }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <label>
+                Subject
+            </label>
+
+            <input
+                type="text"
+                name="subject"
+                id="subject"
+                placeholder="Enter subject"
+                required
+            >
+
+
+            <label>
+                Class Number
+            </label>
+
+            <input
+                type="number"
+                name="class_number"
+                id="class_number"
+                placeholder="Example: 1"
+                min="1"
+                required
+            >
+
+
+            <label>
+                Attendance Status
+            </label>
+
+            <select
+                name="status"
+                id="status"
+                required>
+
+                <option value="Present">
+                    Present
+                </option>
+
+                <option value="Absent">
+                    Absent
+                </option>
+
+            </select>
+
+
+            <button type="submit">
+                Save Attendance
+            </button>
+
+        </form>
+
+
+        {% if message %}
+
+        <div class="success-message">
+            ✓ {{ message }}
+        </div>
+
+        {% endif %}
+
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Records -->
+
+    <div class="card">
+
+        <h2>
+            Attendance Records
+        </h2>
+
+        {% if records %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Class
+                        </th>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Subject
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for record in records %}
+
+                    <tr>
+
+                        <td>
+                            {{ record["class_number"] }}
+                        </td>
+
+                        <td>
+                            {{ record["student"] }}
+                        </td>
+
+                        <td>
+                            {{ record["subject"] }}
+                        </td>
+
+                        <td>
+
+                            {% if record["status"] == "Present" %}
+
+                            <span class="present">
+                                Present
+                            </span>
+
+                            {% else %}
+
+                            <span class="absent">
+                                Absent
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-message">
+            No attendance records yet.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     STUDENT
+===================================================== -->
+
+{% elif page == "student" %}
+
+<header class="dashboard-header">
+
+    <div>
+
+        <h1>
+            Student Dashboard
+        </h1>
+
+        <p>
+            Welcome, {{ student_name }}
+        </p>
+
+    </div>
+
+    <a href="/logout"
+       class="logout-button">
+        Logout
+    </a>
+
+</header>
+
+
+<div class="dashboard-container">
+
+
+    <!-- Summary -->
+
+    <div class="card">
+
+        <h2>
+            Attendance Report
+        </h2>
+
+
+        <div class="student-info">
+
+            <p>
+                <strong>Student:</strong>
+                {{ student_name }}
+            </p>
+
+            <p>
+                <strong>Subject:</strong>
+                {{ subject }}
+            </p>
+
+        </div>
+
+
+        <hr>
+
+
+        <div class="stats">
+
+
+            <div class="stat-box">
+
+                <div class="stat-title">
+                    Total Classes
+                </div>
+
+                <div class="stat-number">
+                    {{ total }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-box">
+
+                <div class="stat-title">
+                    Present
+                </div>
+
+                <div class="stat-number present-number">
+                    {{ present }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-box">
+
+                <div class="stat-title">
+                    Absent
+                </div>
+
+                <div class="stat-number absent-number">
+                    {{ absent }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <h3 class="percentage-title">
+            Attendance Percentage
+        </h3>
+
+
+        <div class="percentage">
+
+            {{ percentage }}%
+
+        </div>
+
+
+        {% if total == 0 %}
+
+        <div class="alert">
+
+            No attendance records available.
+
+        </div>
+
+
+        {% elif percentage < 75 %}
+
+        <div class="alert">
+
+            ⚠ Attendance Shortage!
+
+            <br>
+
+            Attendance is below 75%.
+
+        </div>
+
+
+        {% else %}
+
+        <div class="success-box">
+
+            ✓ Attendance is 75% or above.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Class Attendance -->
+
+    <div class="card">
+
+        <h2>
+            Class-wise Attendance
+        </h2>
+
+
+        {% if records %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Class
+                        </th>
+
+                        <th>
+                            Subject
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for record in records %}
+
+                    <tr>
+
+                        <td>
+                            {{ record["class_number"] }}
+                        </td>
+
+                        <td>
+                            {{ record["subject"] }}
+                        </td>
+
+                        <td>
+
+                            {% if record["status"] == "Present" %}
+
+                            <span class="present">
+                                Present
+                            </span>
+
+                            {% else %}
+
+                            <span class="absent">
+                                Absent
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-message">
+            No attendance records available.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+</body>
+
+</html>
